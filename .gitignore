@@ -1,0 +1,9 @@
+# Misc
+.DS_Store
+REQUIREMENTS.md
+
+# Frontend
+frontend/.next
+frontend/node_modules
+frontend/.env
+frontend/.env.local
