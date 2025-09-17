@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { User as UserIcon, LogOut as LogOutIcon } from 'lucide-react';
 
@@ -7,18 +7,32 @@ import { useAuthStore } from '@/stores/authStore';
 
 export default function AccountMenu() {
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const { user, logout } = useAuthStore();
 
-  // Close the menu when pressing the escape key.
+  // Close the menu when pressing the escape key or clicking outside.
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsVisible(false);
       }
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsVisible(false);
+      }
+    };
+
+    if (isVisible) {
+      window.addEventListener('keydown', handleEscape);
+      document.addEventListener('mousedown', handleClickOutside);
     }
 
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [isVisible]);
 
   const handleLogout = () => {
@@ -27,7 +41,7 @@ export default function AccountMenu() {
   };
 
   return (
-    <div className="relative">
+    <div ref={menuRef} className="relative">
       <Button
         variant="default"
         className="rounded-full w-10 h-10 p-0 focus-visible:ring-0 focus-visible:ring-offset-0"
