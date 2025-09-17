@@ -16,10 +16,10 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    // if (!isAuthenticated) {
-    //   router.push('/login');
-    //   return;
-    // }
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
 
     // Initialize mock data when page mounts.
     if (showRows.length === 0) {
