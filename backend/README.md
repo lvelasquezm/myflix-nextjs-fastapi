@@ -49,7 +49,7 @@ $ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-2. Run the server (via the `run.py` server runner):
+2. Start the development server (via the `run.py` server runner):
 ```bash
 python run.py
 ```
@@ -62,21 +62,20 @@ python run.py
 ## Project Structure
 
 ```
-backend/
-├── app/
-│   ├── core/
-│   │   ├── config.py          # Application configuration
-│   │   └── security.py        # JWT and password utilities
-│   ├── models/
-│   │   └── auth.py            # Pydantic models for auth
-│   ├── routers/
-│   │   └── auth.py            # Authentication endpoints
-│   └── services/
-│       └── auth_service.py    # Authentication business logic
-├── .env                       # Non-secret environment variables
-├── main.py                    # FastAPI application configuration
-├── requirements.txt           # Python dependencies
-└── run.py                     # Backend server runner with some validations
+app/
+├── core/
+│   ├── config.py          # Application configuration
+│   └── security.py        # JWT and password utilities
+├── models/
+│   └── auth.py            # Pydantic models for auth
+├── routers/
+│   └── auth.py            # Authentication endpoints
+└── services/
+│   └── auth_service.py    # Authentication business logic
+│.env                      # Non-secret environment variables
+│main.py                   # FastAPI application configuration
+│requirements.txt          # Python dependencies
+└run.py                    # Backend server runner with some validations
 ```
 
 
