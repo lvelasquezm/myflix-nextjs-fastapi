@@ -21,7 +21,7 @@ class AuthService:
 
     def __init__(self):
         """Initialize the authentication service with dummy users."""
-        # Dummy users for testing (password is 'demo123' and 'admin123' hashed)
+        # Dummy users for testing (passwords are 'demo123' and 'admin123' hashed)
         self.dummy_users = {
             "demo@myflix.com": {
                 "id": "user_01",

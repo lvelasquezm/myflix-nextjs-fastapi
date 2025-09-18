@@ -41,15 +41,15 @@ router = APIRouter(prefix="/api/auth", tags=["authentication"])
     - Response 200: { token: string, user: { id, email } }
 
     Authentication Logic:
-    - For demo purposes, accepts any valid email/password
-    combination (min 6 chars)
-    - Returns JWT token valid for 30 minutes
+    - For demo purposes, accepts pre-canned email/password
+    combinations (min 6 chars for password)
+    - Returns JWT token valid for 24 hours
     - Token includes user ID and email in payload
 
     Error Handling:
     - 400: Invalid request format
     - 401: Invalid credentials (wrong email/password)
-    - 422: Validation errors (invalid email format, missing fields)
+    - 422: Validation errors (invalid email format, password too short)
     """
 )
 async def login(login_request: LoginRequest):
@@ -110,12 +110,6 @@ async def login(login_request: LoginRequest):
 async def logout():
     """
     User logout endpoint.
-
-    This is a placeholder endpoint for future implementation.
-    In a full implementation with stateful sessions,
-    this would invalidate the token.
-    For JWT tokens, logout is typically handled client-side
-    by removing the token.
     """
     return {
         "message": "To be implemented.",
