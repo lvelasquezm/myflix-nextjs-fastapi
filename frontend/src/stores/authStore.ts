@@ -1,7 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { AuthActions, AuthState, LoginCredentials, User } from '@/types/auth';
+import { apiClient } from '@/lib/api';
+
+import type { AuthActions, AuthState, LoginCredentials, LoginResponse } from '@/types/auth';
 
 export const useAuthStore = create<AuthState & AuthActions>()(
   persist(
@@ -16,21 +18,13 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       // Actions
       login: async (credentials: LoginCredentials) => {
         set({ isLoading: true, error: null });
-        
+
         try {
-          // Simulate API call - will be replaced with actual backend integration
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          // Mock successful login
-          const mockUser: User = {
-            id: '1',
-            email: credentials.email,
-          };
-          const mockToken = 'mock-jwt-token';
+          const response = await apiClient.post<LoginResponse>('/api/auth/login', credentials);
           
           set({
-            user: mockUser,
-            token: mockToken,
+            user: response.user,
+            token: response.token,
             isAuthenticated: true,
             isLoading: false,
             error: null,
@@ -48,6 +42,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           user: null,
           token: null,
           isAuthenticated: false,
+          isLoading: false,
           error: null,
         });
       },
