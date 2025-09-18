@@ -25,30 +25,35 @@ A Netflix-style application built with Next.js, Tailwind CSS, Shadcn/UI and Fram
 
 ### Prerequisites
 
-1. Node.js 22.0.0 or higher. The preferred method is to use a Node version manager like
-[nvm](https://github.com/nvm-sh/nvm) to avoid collisions with already installed Node versions.
+1. In a terminal, if you're at the root, go to the `frontend` folder:
+```bash
+$ cd frontend
+```
+
+2. Node.js 22.0.0 or higher (specified in `.nvmrc`). The preferred method is to use a Node version manager
+like [nvm](https://github.com/nvm-sh/nvm) to avoid collisions with other installed Node versions.
 You can see the installation instructions [here](https://github.com/nvm-sh/nvm#installing-and-updating).
 After installing it, just run:
 ```bash
-nvm install 22.0.0
-```
-2. Make sure you're using the required Node version, if you're using `nvm` then just run
-the next command (this will use the Node version from the `.nvmrc` file):
-```bash
-nvm use
+$ nvm install 22.0.0
 ```
 
-### Installation
+3. Make sure you're using the required Node version by running:
+```bash
+$ nvm use
+```
+
+### Local development
 
 1. Install dependencies:
-   ```bash
-   npm install
-   ```
+```bash
+$ npm install
+```
 
 2. Start the development server:
-   ```bash
-   npm run dev
-   ```
+```bash
+$ npm run dev
+```
 
 3. Open [http://localhost:3000](http://localhost:3000) in your browser
 
