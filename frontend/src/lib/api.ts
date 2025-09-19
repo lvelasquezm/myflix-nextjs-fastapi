@@ -37,7 +37,10 @@ class ApiClient {
   
       return response.json();
     } catch (error) {
-      throw new Error(error instanceof Error ? error.message : GENERIC_ERROR_MESSAGE);
+      const msg = error instanceof Error ? error.message : GENERIC_ERROR_MESSAGE;
+      console.error('Failed request with error message:', msg);
+
+      throw new Error(msg);
     }
   }
 
@@ -64,7 +67,10 @@ class ApiClient {
   
       return response.json();
     } catch (error) {
-      throw new Error(error instanceof Error ? error.message : GENERIC_ERROR_MESSAGE);
+      const msg = error instanceof Error ? error.message : GENERIC_ERROR_MESSAGE;
+      console.error('Failed request with error message:', msg);
+
+      throw new Error(msg);
     }
   }
 }
