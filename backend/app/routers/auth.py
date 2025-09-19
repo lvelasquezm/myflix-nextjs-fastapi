@@ -18,7 +18,7 @@ router = APIRouter(prefix="/api/auth", tags=["authentication"])
     responses={
         200: {
             "description": "Login successful",
-            "model": LoginResponse
+            "model": LoginResponse,
         },
         400: {
             "description": "Invalid request data",
@@ -28,7 +28,7 @@ router = APIRouter(prefix="/api/auth", tags=["authentication"])
         },
         422: {
             "description": "Validation error",
-        }
+        },
     },
     summary="User Login",
     description="""
@@ -50,7 +50,7 @@ router = APIRouter(prefix="/api/auth", tags=["authentication"])
     - 400: Invalid request format
     - 401: Invalid credentials (wrong email/password)
     - 422: Validation errors (invalid email format, password too short)
-    """
+    """,
 )
 async def login(login_request: LoginRequest):
     """
@@ -98,7 +98,7 @@ async def login(login_request: LoginRequest):
         # Handle unexpected errors
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error during authentication"
+            detail="Internal server error during authentication",
         ) from e
 
 

@@ -7,8 +7,8 @@ proper configuration and error handling.
 """
 
 import os
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -35,23 +35,30 @@ def main():
         print("📦 Checking dependencies...")
         try:
             # Activate venv and check if fastapi is installed
-            result = subprocess.run([
-                str(venv_path / "bin" / "python"),
-                "-c",
-                (
-                    "import fastapi; "
-                    "print(f'FastAPI {fastapi.__version__} installed')"
-                )
-            ], capture_output=True, text=True)
+            result = subprocess.run(
+                [
+                    str(venv_path / "bin" / "python"),
+                    "-c",
+                    (
+                        "import fastapi; "
+                        "print(f'FastAPI {fastapi.__version__} installed')"
+                    ),
+                ],
+                capture_output=True,
+                text=True,
+            )
 
             if result.returncode != 0:
                 print("❌ Dependencies not installed. Installing now...")
-                subprocess.run([
-                    str(venv_path / "bin" / "pip"),
-                    "install",
-                    "-r",
-                    "requirements.txt"
-                ], check=True)
+                subprocess.run(
+                    [
+                        str(venv_path / "bin" / "pip"),
+                        "install",
+                        "-r",
+                        "requirements.txt",
+                    ],
+                    check=True,
+                )
             else:
                 print(f"✅ {result.stdout.strip()}")
         except subprocess.CalledProcessError as e:
@@ -66,14 +73,20 @@ def main():
 
     try:
         # Run the server using uvicorn
-        subprocess.run([
-            str(venv_path / "bin" / "uvicorn"),
-            "main:app",
-            "--host", "0.0.0.0",
-            "--port", "8000",
-            "--reload",
-            "--log-level", "info"
-        ], check=True)
+        subprocess.run(
+            [
+                str(venv_path / "bin" / "uvicorn"),
+                "main:app",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "8000",
+                "--reload",
+                "--log-level",
+                "info",
+            ],
+            check=True,
+        )
     except KeyboardInterrupt:
         print("\n🛑 Server stopped by user")
     except subprocess.CalledProcessError as e:

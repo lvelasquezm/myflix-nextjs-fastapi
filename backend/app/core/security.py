@@ -68,5 +68,5 @@ def create_access_token(user_id: str, email: str) -> str:
     return jwt.encode(
         token_data,
         key=settings.ACCESS_TOKEN_SECRET_KEY,
-        algorithm=settings.ACCESS_TOKEN_ALGORITHM
+        algorithm=settings.ACCESS_TOKEN_ALGORITHM,
     )

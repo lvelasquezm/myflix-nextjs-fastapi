@@ -9,14 +9,15 @@ from typing import Optional
 
 from app.core.security import (
     create_access_token,
-    verify_password,
     get_password_hash,
+    verify_password,
 )
 from app.models.auth import LoginRequest, LoginResponse, UserResponse
 
 
 class AuthService:
     """Service class for handling authentication operations."""
+
     dummy_users: dict[str, dict]
 
     def __init__(self):
@@ -26,13 +27,13 @@ class AuthService:
             "demo@myflix.com": {
                 "id": "user_01",
                 "email": "demo@myflix.com",
-                "hashed_password": get_password_hash("demo123")
+                "hashed_password": get_password_hash("demo123"),
             },
             "admin@myflix.com": {
                 "id": "user_02",
                 "email": "admin@myflix.com",
-                "hashed_password": get_password_hash("admin123")
-            }
+                "hashed_password": get_password_hash("admin123"),
+            },
         }
 
     def authenticate_user(self, email: str, password: str) -> Optional[dict]:
@@ -57,9 +58,7 @@ class AuthService:
 
         return user
 
-    async def login(
-        self, login_request: LoginRequest
-    ) -> Optional[LoginResponse]:
+    async def login(self, login_request: LoginRequest) -> Optional[LoginResponse]:
         """
         Process user login.
 
@@ -69,27 +68,18 @@ class AuthService:
         Returns:
             LoginResponse if successful, None if failed
         """
-        user = self.authenticate_user(
-            login_request.email,
-            login_request.password
-        )
+        user = self.authenticate_user(login_request.email, login_request.password)
 
         if not user:
             return None
 
         # Create access token
-        access_token = create_access_token(
-            user_id=user["id"],
-            email=user["email"]
-        )
+        access_token = create_access_token(user_id=user["id"], email=user["email"])
 
         # Create response
         return LoginResponse(
             token=access_token,
-            user=UserResponse(
-                id=user["id"],
-                email=user["email"]
-            )
+            user=UserResponse(id=user["id"], email=user["email"]),
         )
 
 
