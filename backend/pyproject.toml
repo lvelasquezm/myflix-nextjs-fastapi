@@ -18,4 +18,4 @@ skip = [".venv/"]
 max-line-length = 88
 select = ["C", "E", "F", "W", "B", "B950"]
 extend-ignore = ["E203", "E501", "W503", "E712"]
-extend-exclude = [".venv/", "frontend/node_modules/"]
+extend-exclude = [".venv/", "../frontend/node_modules/"]
