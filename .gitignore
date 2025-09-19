@@ -10,4 +10,5 @@ frontend/.env.local
 # Backend
 backend/.venv
 backend/.env.local
-__pycache__/
+**/__pycache__/
+**/.mypy_cache/
