@@ -6,7 +6,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.routers import auth
+from app.core.logging import setup_logging
+from app.routers import auth, generation
+
+# Set up logging
+setup_logging(settings.LOG_LEVEL)
 
 # Create FastAPI app
 app = FastAPI(
@@ -28,6 +32,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router)
+app.include_router(generation.router)
 
 
 @app.get("/")
