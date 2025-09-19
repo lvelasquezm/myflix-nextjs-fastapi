@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 
 export function RouteGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isAuthInitialized } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -13,8 +13,8 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
 
   // Redirect logic based on auth status.
   useEffect(() => {
-    // Don't redirect while still loading.
-    if (isLoading) return;
+    // Don't redirect while still initializing.
+    if (!isAuthInitialized) return;
 
     // Not authenticated and not on login page, redirect to login.
     if (!isAuthenticated && !isLoginPage) {
@@ -27,11 +27,11 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
       router.push('/');
       return;
     }
-  }, [isAuthenticated, isLoading, pathname, router]);
+  }, [isAuthenticated, isAuthInitialized, pathname, router]);
 
   // Don't render anything while loading or during redirects.
-  // AuthProvider handles the loading UI.
-  if (isLoading) {
+  // AuthProvider handles the loading/initializing UI.
+  if (!isAuthInitialized) {
     return null;
   }
 

@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { initialize, isLoading } = useAuthStore();
+  const { initialize, isAuthInitialized } = useAuthStore();
 
   // Initialize auth state on app load
   useEffect(() => {
@@ -13,7 +13,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [initialize]);
 
   // Show loading spinner while determining auth state
-  if (isLoading) {
+  if (!isAuthInitialized) {
     return (
       <div className="min-h-screen bg-primary/10 flex items-center justify-center">
         <div className="text-center">

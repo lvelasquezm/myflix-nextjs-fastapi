@@ -11,9 +11,9 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       user: null,
       token: null,
       isAuthenticated: false,
-      // Start with loading true to initialize auth state
-      // (see AuthProvider.tsx).
-      isLoading: true,
+      isLoading: false,
+      // Start with false to initialize auth state (see AuthProvider.tsx).
+      isAuthInitialized: false,
       error: null,
 
       // Actions
@@ -55,7 +55,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         if (token) {
           set({
             isAuthenticated: true,
-            isLoading: false,
+            isAuthInitialized: true,
           });
         } else {
           // Token doesn't exist, clear auth state
@@ -63,7 +63,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             user: null,
             token: null,
             isAuthenticated: false,
-            isLoading: false,
+            isAuthInitialized: true,
             error: null,
           });
         }
