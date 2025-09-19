@@ -1,26 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 
 import { LoginForm } from '@/components/auth/LoginForm';
-import { useAuthStore } from '@/stores/authStore';
 
 export default function LoginPage() {
-  const { isAuthenticated } = useAuthStore();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.push('/');
-    }
-  }, [isAuthenticated, router]);
-
-  if (isAuthenticated) {
-    return null;
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-800 to-primary/50 flex items-center justify-center p-4">
       <motion.div

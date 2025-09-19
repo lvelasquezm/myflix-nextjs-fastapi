@@ -1,35 +1,22 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 import Hero from '@/components/home/Hero';
 import Navbar from '@/components/home/Navbar/Navbar';
 import ShowRow from '@/components/home/Shows/ShowRow';
 
-import { useAuthStore } from '@/stores/authStore';
 import { useShowsStore } from '@/stores/showsStore';
 
 export default function HomePage() {
-  const { isAuthenticated } = useAuthStore();
   const { showRows, initMockData } = useShowsStore();
-  const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
-
     // Initialize mock data when page mounts.
     if (showRows.length === 0) {
       initMockData();
     }
-  }, [isAuthenticated, router, showRows.length, initMockData]);
-
-  if (!isAuthenticated) {
-    return null; // Will redirect to login.
-  }
+  }, [showRows.length, initMockData]);
 
   return (
     <div className="min-h-screen bg-black">

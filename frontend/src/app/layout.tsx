@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 
 import { geistSans, geistMono } from '@/lib/fonts';
+import { AuthProvider } from '@/components/auth/AuthProvider';
+import { RouteGuard } from '@/components/auth/RouteGuard';
 
 import '@/styles/globals.css';
 
@@ -17,7 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
+        <AuthProvider>
+          <RouteGuard>
+            {children}
+          </RouteGuard>
+        </AuthProvider>
       </body>
     </html>
   );

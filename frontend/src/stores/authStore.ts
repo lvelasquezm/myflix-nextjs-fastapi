@@ -2,17 +2,18 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import { apiClient } from '@/lib/api';
-
 import type { AuthActions, AuthState, LoginCredentials, LoginResponse } from '@/types/auth';
 
 export const useAuthStore = create<AuthState & AuthActions>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       // State
       user: null,
       token: null,
       isAuthenticated: false,
-      isLoading: false,
+      // Start with loading true to initialize auth state
+      // (see AuthProvider.tsx).
+      isLoading: true,
       error: null,
 
       // Actions
@@ -45,6 +46,27 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           isLoading: false,
           error: null,
         });
+      },
+
+      // Initialize auth state from localStorage
+      initialize: () => {
+        const { token } = get();
+        
+        if (token) {
+          set({
+            isAuthenticated: true,
+            isLoading: false,
+          });
+        } else {
+          // Token doesn't exist, clear auth state
+          set({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: null,
+          });
+        }
       },
     }),
     {
