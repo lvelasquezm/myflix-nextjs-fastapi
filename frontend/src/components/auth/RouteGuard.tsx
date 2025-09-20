@@ -27,7 +27,7 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
       router.push('/');
       return;
     }
-  }, [isAuthenticated, isAuthInitialized, pathname, router]);
+  }, [isAuthenticated, isAuthInitialized, pathname, router, isLoginPage]);
 
   // Don't render anything while loading or during redirects.
   // AuthProvider handles the loading/initializing UI.

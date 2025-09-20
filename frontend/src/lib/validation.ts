@@ -90,12 +90,9 @@ export const loginValidator = new FormValidator<{ email: string; password: strin
   .minLength('password', 6, 'Password must be at least 6 characters');
 
 export const generationValidator = new FormValidator<{ prompt: string; numImages: number }>()
-  .required('prompt')
+  .required('prompt', 'Prompt is required')
   .minLength('prompt', 3, 'Prompt must be at least 3 characters')
   .maxLength('prompt', 500, 'Prompt must be no more than 500 characters')
   .custom('numImages', (value) => {
-    if (value < 1 || value > 20) {
-      return 'Number of images must be between 1 and 20';
-    }
-    return null;
+    return value < 1 ? 'Number of images must be at least 1' : null;
   });

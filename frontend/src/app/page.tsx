@@ -1,15 +1,17 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect, useState } from "react";
 
-import Hero from '@/components/home/Hero';
-import Navbar from '@/components/home/Navbar/Navbar';
-import ShowRow from '@/components/home/Shows/ShowRow';
+import GenerationConsole from "@/components/home/GenerationConsole";
+import Hero from "@/components/home/Hero";
+import Navbar from "@/components/home/Navbar/Navbar";
+import ShowRow from "@/components/home/Shows/ShowRow";
 
-import { useShowsStore } from '@/stores/showsStore';
+import { useShowsStore } from "@/stores/showsStore";
 
 export default function HomePage() {
   const { showRows, initMockData } = useShowsStore();
+  const [showGenerationConsole, setShowGenerationConsole] = useState(false);
 
   useEffect(() => {
     // Initialize mock data when page mounts.
@@ -21,9 +23,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-black">
       {/* Navbar */}
-      <Navbar onGenerateClick={() => {
-        console.log('Generate clicked!');
-      }} />
+      <Navbar onGenerateClick={() => setShowGenerationConsole(true)} />
 
       {/* Hero */}
       <Hero />
@@ -46,6 +46,11 @@ export default function HomePage() {
           </p>
         </div>
       </footer>
+
+      <GenerationConsole
+        isOpen={showGenerationConsole}
+        onClose={() => setShowGenerationConsole(false)}
+      />
     </div>
   );
 }
