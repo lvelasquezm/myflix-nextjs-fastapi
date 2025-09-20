@@ -139,28 +139,23 @@ export const useGenerationStore = create<GenerationStore>((set, get) => ({
         const messageEvent = event as MessageEvent;
         const apiData: DoneEventData = JSON.parse(messageEvent.data);
 
-        const data = {
-          status: apiData.status,
-          total: apiData.total,
-          ttfiMs: apiData.ttfi_ms,
-          totalMs: apiData.total_ms,
-        };
+        console.log('Raw done event data:', apiData);
 
         set({
           currentJob: {
             ...currentJob,
             status: 'completed',
             completedAt: new Date().toISOString(),
-            ttfiMs: data.ttfiMs,
-            totalMs: data.totalMs,
+            ttfiMs: apiData.ttfi_ms,
+            totalMs: apiData.total_ms,
           },
           isGenerating: false,
         });
 
         console.log('Job completed:', {
-          total: data.total,
-          ttfiMs: data.ttfiMs,
-          totalMs: data.totalMs,
+          total: apiData.total,
+          ttfiMs: apiData.ttfi_ms,
+          totalMs: apiData.total_ms,
         });
 
         // Close the connection
@@ -175,17 +170,14 @@ export const useGenerationStore = create<GenerationStore>((set, get) => ({
         const messageEvent = event as MessageEvent;
         const apiData: ErrorEventData = JSON.parse(messageEvent.data);
 
-        const data = {
-          error: apiData.error,
-          jobId: apiData.job_id,
-        };
+        console.log('Raw error event data:', apiData);
 
         set({
-          error: data.error,
+          error: apiData.error,
           isGenerating: false,
         });
 
-        console.error('Job error:', data.error);
+        console.error('Job error:', apiData.error);
         eventSource.close();
       } catch (error) {
         console.error('Error parsing error event:', error);

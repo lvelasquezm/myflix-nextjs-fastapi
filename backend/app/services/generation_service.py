@@ -315,18 +315,29 @@ class GenerationService:
             ttfi_ms=job.ttfi_ms,
             total_ms=job.total_ms,
         )
+        logger.info(
+            f"Broadcasting completion for job {job_id}: {event_data.model_dump()}"
+        )
         await self._broadcast_event(job_id, "done", event_data.model_dump())
 
     async def _broadcast_event(self, job_id: str, event_type: str, data: dict) -> None:
         """Broadcast event to all job subscribers."""
         if job_id not in self._job_streams:
+            logger.warning(f"No streams found for job {job_id}")
             return
 
         import json
 
         event_string = f"event: {event_type}\ndata: {json.dumps(data)}\n\n"
+        logger.debug(f"Broadcasting event to job {job_id}: {event_string.strip()}")
 
         # Send to all subscribers
+        subscriber_count = len(self._job_streams[job_id])
+        logger.info(
+            f"Broadcasting {event_type} event to\n"
+            f"{subscriber_count} subscribers for job {job_id}"
+        )
+
         for queue in self._job_streams[job_id]:
             try:
                 await queue.put(event_string)
