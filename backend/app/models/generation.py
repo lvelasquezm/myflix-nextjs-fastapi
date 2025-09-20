@@ -9,8 +9,6 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
-from app.core.config import settings
-
 
 class GenerationStatus(str, Enum):
     """Status of a generation job or individual result."""
@@ -37,11 +35,6 @@ class GenerationRequest(BaseModel):
         ge=1,
         description="Number of images to generate",
         example=5,
-    )
-    model: Optional[str] = Field(
-        default=settings.IMAGE_GEN_MODEL,
-        description="Image generation model to use",
-        example=settings.IMAGE_GEN_MODEL,
     )
 
 
@@ -92,9 +85,6 @@ class GenerationJob(BaseModel):
     )
     prompt: str = Field(default="", description="Original prompt used for generation")
     num_images: int = Field(default=0, description="Total number of images requested")
-    model: str = Field(
-        default="", description="Image generation model used for generation"
-    )
     status: GenerationStatus = Field(
         default=GenerationStatus.PENDING, description="Overall status of the job"
     )

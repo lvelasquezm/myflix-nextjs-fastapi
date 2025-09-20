@@ -67,7 +67,6 @@ class GenerationService:
             job_id=job_id,
             prompt=request.prompt,
             num_images=request.num_images,
-            model=request.model or settings.IMAGE_GEN_MODEL,
             status=GenerationStatus.PENDING,
             results=results,
             created_at=datetime.now(timezone.utc),
@@ -134,12 +133,11 @@ class GenerationService:
                     event = await asyncio.wait_for(stream_queue.get(), timeout=30.0)
                     yield event
 
-                    # Check if job is complete
-                    current_job = self._jobs.get(job_id)
-                    if current_job and current_job.status in [
-                        GenerationStatus.COMPLETED,
-                        GenerationStatus.FAILED,
-                    ]:
+                    # Check if this is a completion or error event
+                    if "event: done" in event or "event: error" in event:
+                        logger.info(
+                            f"Closing stream for job {job_id} after completion event"
+                        )
                         break
 
                 except asyncio.TimeoutError:
@@ -179,7 +177,7 @@ class GenerationService:
             tasks = []
             for i in range(job.num_images):
                 task = asyncio.create_task(
-                    self._generate_single_image_async(job_id, i, job.prompt, job.model)
+                    self._generate_single_image_async(job_id, i, job.prompt)
                 )
                 tasks.append(task)
 
@@ -234,7 +232,7 @@ class GenerationService:
             await self._broadcast_event(job_id, "error", error_data.model_dump())
 
     async def _generate_single_image_async(
-        self, job_id: str, index: int, prompt: str, model: str
+        self, job_id: str, index: int, prompt: str
     ) -> GenerationResult:
         """
         Generate a single image using Replicate API.
@@ -261,7 +259,9 @@ class GenerationService:
             loop = asyncio.get_event_loop()
             output = await loop.run_in_executor(
                 self._executor,
-                lambda: self._client.run(model, input={"prompt": prompt}),
+                lambda: self._client.run(
+                    settings.IMAGE_GEN_MODEL, input={"prompt": prompt}
+                ),
             )
 
             image_url = None

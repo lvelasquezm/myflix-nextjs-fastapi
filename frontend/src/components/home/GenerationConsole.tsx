@@ -25,6 +25,8 @@ import { useGenerationStore } from '@/stores/generationStore';
 import type { GenerationRequest } from '@/types/generation';
 import type { ValidationError } from '@/types/validation';
 
+const DEFAULT_NUM_IMAGES = 5;
+
 interface GenerationConsoleProps {
   isOpen: boolean;
   onClose: () => void;
@@ -33,7 +35,7 @@ interface GenerationConsoleProps {
 export default function GenerationConsole({ isOpen, onClose }: GenerationConsoleProps) {
   const [formData, setFormData] = useState<GenerationRequest>({
     prompt: '',
-    numImages: 5,
+    numImages: DEFAULT_NUM_IMAGES,
   });
   const [errors, setErrors] = useState<ValidationError[]>([]);
 
@@ -63,7 +65,7 @@ export default function GenerationConsole({ isOpen, onClose }: GenerationConsole
 
     setFormData({
       prompt: '',
-      numImages: 5,
+      numImages: DEFAULT_NUM_IMAGES,
     });
     setErrors([]);
     onClose();
@@ -118,6 +120,11 @@ export default function GenerationConsole({ isOpen, onClose }: GenerationConsole
 
   const handleNewGeneration = () => {
     clearJob();
+    setFormData({
+      prompt: '',
+      numImages: DEFAULT_NUM_IMAGES,
+    });
+    setErrors([]);
   };
 
   const downloadImage = (url: string, index: number) => {
@@ -318,7 +325,7 @@ export default function GenerationConsole({ isOpen, onClose }: GenerationConsole
                   </div>
 
                   {/* Generated images grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-[550px] overflow-y-auto">
                     {currentJob.results.map((result) => (
                       <motion.div
                         key={result.index}

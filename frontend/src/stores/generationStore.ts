@@ -139,8 +139,6 @@ export const useGenerationStore = create<GenerationStore>((set, get) => ({
         const messageEvent = event as MessageEvent;
         const apiData: DoneEventData = JSON.parse(messageEvent.data);
 
-        console.log('Raw done event data:', apiData);
-
         set({
           currentJob: {
             ...currentJob,
@@ -169,8 +167,6 @@ export const useGenerationStore = create<GenerationStore>((set, get) => ({
       try {
         const messageEvent = event as MessageEvent;
         const apiData: ErrorEventData = JSON.parse(messageEvent.data);
-
-        console.log('Raw error event data:', apiData);
 
         set({
           error: apiData.error,
@@ -206,7 +202,7 @@ export const useGenerationStore = create<GenerationStore>((set, get) => ({
       eventSource.close();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       delete (get() as any)._eventSource;
-      console.log('SSE connection closed');
+      console.log('SSE connection closed for job:', get().currentJob?.jobId);
     }
   },
 
