@@ -1,6 +1,18 @@
-import { GENERIC_ERROR_MESSAGE, LOGIN_ERROR_MSG_BY_STATUS } from '@/constants/error';
+import { GENERIC_ERROR_MESSAGE } from '@/constants/error';
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL as string;
+
+/** Custom API error class. */
+export class CustomApiError extends Error {
+  /** Error status code. */
+  statusCode: number;
+
+  constructor(message: string, statusCode: number) {
+    super(message);
+    this.name = 'CustomApiError';
+    this.statusCode = statusCode;
+  }
+}
 
 /** API client for making requests to the backend API. */
 class ApiClient {
@@ -29,46 +41,18 @@ class ApiClient {
   
       if (!response.ok) {
         await response.json();
-        const errorMsg = LOGIN_ERROR_MSG_BY_STATUS[
-          response.status as keyof typeof LOGIN_ERROR_MSG_BY_STATUS
-        ] || GENERIC_ERROR_MESSAGE;
-        throw new Error(errorMsg);
+        throw new CustomApiError(response.statusText, response.status);
       }
   
       return response.json();
     } catch (error) {
-      const msg = error instanceof Error ? error.message : GENERIC_ERROR_MESSAGE;
-      console.error('Failed request with error message:', msg);
-
-      throw new Error(msg);
-    }
-  }
-
-  async get<T>(endpoint: string, token?: string): Promise<T> {
-    const headers: HeadersInit = {};
-
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
-    try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
-        method: 'GET',
-        headers,
-      });
-
-      if (!response.ok) {
-        await response.json();
-        const errorMsg = LOGIN_ERROR_MSG_BY_STATUS[
-          response.status as keyof typeof LOGIN_ERROR_MSG_BY_STATUS
-        ] || GENERIC_ERROR_MESSAGE;
-        throw new Error(errorMsg);
+      // Re-throw CustomApiError.
+      if (error instanceof CustomApiError) {
+        throw error;
       }
-  
-      return response.json();
-    } catch (error) {
+
       const msg = error instanceof Error ? error.message : GENERIC_ERROR_MESSAGE;
-      console.error('Failed request with error message:', msg);
+      console.error('Failed POST request with error message:', msg);
 
       throw new Error(msg);
     }

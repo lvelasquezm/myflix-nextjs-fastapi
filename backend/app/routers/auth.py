@@ -100,17 +100,3 @@ async def login(login_request: LoginRequest):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error during authentication",
         ) from e
-
-
-@router.post(
-    "/logout",
-    summary="User Logout",
-    description="Logout current user",
-)
-async def logout():
-    """
-    User logout endpoint.
-    """
-    return {
-        "message": "To be implemented.",
-    }

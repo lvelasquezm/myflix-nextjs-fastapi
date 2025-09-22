@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import { apiClient } from '@/lib/api';
+import { LOGIN_ERROR_MSG_BY_STATUS, LOGIN_FAILED_ERROR_MESSAGE } from '@/constants/error';
+import { apiClient, CustomApiError } from '@/lib/api';
 import type { AuthActions, AuthState, LoginCredentials, LoginResponse } from '@/types/auth';
 
 export const useAuthStore = create<AuthState & AuthActions>()(
@@ -31,9 +32,18 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             error: null,
           });
         } catch (error) {
+          let msg = '';
+          if (error instanceof CustomApiError) {
+            msg = LOGIN_ERROR_MSG_BY_STATUS[
+              error.statusCode as keyof typeof LOGIN_ERROR_MSG_BY_STATUS
+            ] || LOGIN_FAILED_ERROR_MESSAGE;
+          } else {
+            msg = (error as Error).message || LOGIN_FAILED_ERROR_MESSAGE;
+          }
+
           set({
             isLoading: false,
-            error: error instanceof Error ? error.message : 'Login failed',
+            error: msg,
           });
         }
       },
