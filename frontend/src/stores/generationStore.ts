@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { API_BASE_URL, apiClient } from '@/lib/api';
+import { API_BASE_URL, apiClient, CustomApiError } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import type {
   GenerationState,
@@ -69,6 +69,15 @@ export const useGenerationStore = create<GenerationStore>((set, get) => ({
 
       return response.job_id;
     } catch (error) {
+      if (error instanceof CustomApiError) {
+        if ([403, 401].includes(error.statusCode)) {
+          // Auth error, logout user.
+          console.error('Unauthorized to create generation job:', error);
+          useAuthStore.getState().logout();
+          throw error;
+        }
+      }
+
       const errorMessage =
         error instanceof Error
           ? error.message
@@ -86,7 +95,7 @@ export const useGenerationStore = create<GenerationStore>((set, get) => ({
 
   subscribeToJob: (jobId: string) => {
     const eventSource = new EventSource(
-      `${API_BASE_URL}/api/generate/${jobId}/stream`
+      `${API_BASE_URL}/api/generate/${jobId}/stream`,
     );
 
     eventSource.onopen = () => {

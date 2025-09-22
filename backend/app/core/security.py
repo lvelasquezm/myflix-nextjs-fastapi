@@ -5,15 +5,24 @@ This module handles JWT token creation, verification, and password hashing
 for the MyFlix backend API.
 """
 
+import logging
 from datetime import datetime, timedelta, timezone
+from typing import Optional
 
-from jose import jwt
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from app.core.config import settings
 
 # Password hashing context
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Security scheme for JWT authentication
+security = HTTPBearer()
+
+logger = logging.getLogger(__name__)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -70,3 +79,57 @@ def create_access_token(user_id: str, email: str) -> str:
         key=settings.ACCESS_TOKEN_SECRET_KEY,
         algorithm=settings.ACCESS_TOKEN_ALGORITHM,
     )
+
+
+def verify_access_token(token: str) -> Optional[dict]:
+    """
+    Verify and decode a JWT access token.
+
+    Args:
+        token: The JWT token to verify
+
+    Returns:
+        Token payload if valid, None otherwise
+    """
+    try:
+        logger.info(f"Verifying access token: {token}")
+        payload = jwt.decode(
+            token,
+            key=settings.ACCESS_TOKEN_SECRET_KEY,
+            algorithms=[settings.ACCESS_TOKEN_ALGORITHM],
+            # TODO: Verify token expiration
+            options={"verify_exp": False},
+        )
+        return payload
+    except JWTError:
+        logger.error(f"Error verifying access token: {token}")
+        return None
+
+
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> dict:
+    """
+    FastAPI dependency to get the current authenticated user from JWT token.
+
+    Args:
+        credentials: HTTP Authorization credentials containing the Bearer token
+
+    Returns:
+        User payload from the JWT token
+
+    Raises:
+        HTTPException: If token is invalid or missing
+    """
+    logger.info(f"Getting current user from credentials: {credentials}")
+    token = credentials.credentials
+    payload = verify_access_token(token)
+
+    if payload is None:
+        logger.error(f"Invalid authentication credentials: {token}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+        )
+
+    return payload

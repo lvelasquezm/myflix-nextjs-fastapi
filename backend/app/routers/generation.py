@@ -4,9 +4,10 @@ FastAPI router for image generation endpoints.
 
 import logging
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 
+from app.core.security import get_current_user
 from app.models.generation import (
     GenerationJobResponse,
     GenerationRequest,
@@ -27,27 +28,33 @@ router = APIRouter(prefix="/api/generate", tags=["generation"])
     Create a new image generation job that will generate multiple images
     using Replicate API. Returns immediately with a job ID that can be
     used to stream progress updates.
+
+    Requires authentication: Include a valid JWT token in the Authorization
+    header as 'Bearer <token>'.
     """,
 )
 async def create_generation_job(
     request: GenerationRequest,
+    current_user: dict = Depends(get_current_user),
 ) -> GenerationJobResponse:
     """
     Create a new image generation job.
 
     Args:
         request: Generation parameters including prompt and number of images
+        current_user: Authenticated user information from JWT token
 
     Returns:
         GenerationJobResponse: Job ID for tracking progress
 
     Raises:
-        HTTPException: If job creation fails
+        HTTPException: If job creation fails or authentication is invalid
     """
     try:
+        user_email = current_user.get("sub", "unknown")
         logger.info(
-            f"Creating generation job for prompt: '{request.prompt}' "
-            f"with {request.num_images} images"
+            f"Creating generation job for user '{user_email}' "
+            f"with prompt: '{request.prompt}' and {request.num_images} images"
         )
 
         job_id = generation_service.create_job(request)
