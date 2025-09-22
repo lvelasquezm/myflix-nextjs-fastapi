@@ -51,7 +51,8 @@ $ nvm install 22.0.0
 $ nvm use
 ```
 
-4. The frontend requires the `backend` to be running on `http://localhost:8000`.
+4. The frontend requires the `backend` to be running on the value of the env var
+`NEXT_PUBLIC_API_BASE_URL` set in `.env`
 
 ### Local development
 
