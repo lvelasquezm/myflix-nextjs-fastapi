@@ -1,11 +1,15 @@
-# MyFlix Backend API
+# MyFlix Backend
 
-A FastAPI backend service with authentication functionality through JWT.
+A FastAPI backend service with JWT authentication and AI-powered image generation using Replicate API. Features real-time progress streaming and concurrent image processing for optimal performance.
 
 ## Features
 
 - 🚀 **FastAPI** - Modern, fast, web framework for building APIs
 - 🔐 **JWT Authentication** - Secure token-based authentication
+- 🎨 **AI Image Generation** - Powered by Replicate API with real-time progress tracking
+- 📡 **Server-Sent Events** - Live streaming of image generation progress
+- ⚡ **Concurrent Processing** - Generate multiple images simultaneously
+- 📊 **Performance Metrics** - Track TTFI (Time to First Image) and total batch time
 - 📝 **Pydantic Models** - Type-safe request/response validation
 - 🔒 **Password Hashing** - Secure bcrypt password hashing (for demo users for now)
 - 📚 **Auto Documentation** - Interactive API docs with Swagger UI
@@ -14,6 +18,9 @@ A FastAPI backend service with authentication functionality through JWT.
 
 - **Framework**: FastAPI
 - **Authentication**: JWT tokens with python-jose
+- **AI Image Generation**: Replicate API with flux-schnell model (although configurable via env vars)
+- **Real-time Communication**: Server-Sent Events (SSE)
+- **Concurrency**: asyncio with ThreadPoolExecutor
 - **Password Hashing**: bcrypt via passlib
 - **Validation**: Pydantic models
 - **Python**: 3.11.13 (set in `.python-version`, managed via `pyenv`)
@@ -42,6 +49,12 @@ $ pyenv local
 $ source .venv/bin/activate
 ```
 
+4. Make a copy of the `.env.local.example` file and rename it to `.env.local`.
+This file is used to store secret keys on a per-env basis. It should contain
+an environment variable called `REPLICATE_API_TOKEN`, please set the value of that env
+var to a proper Replicate API key, otherwise you won't be able to generate images
+using the `Generate` option in the UI via the Replicate client in the backend.
+
 ### Local development
 
 1. Install dependencies:
@@ -64,24 +77,47 @@ python run.py
 ```
 app/
 ├── core/
-│   ├── config.py          # Application configuration
-│   └── security.py        # JWT and password utilities
+│   ├── config.py                # Application configuration
+│   ├── logging.py               # Logging configuration
+│   └── security.py              # JWT and password utilities
 ├── models/
-│   └── auth.py            # Pydantic models for auth
+│   ├── auth.py                  # Pydantic models for auth
+│   └── generation.py            # Pydantic models for image generation
 ├── routers/
-│   └── auth.py            # Authentication endpoints
+│   ├── auth.py                  # Authentication endpoints
+│   └── generation.py            # Image generation endpoints
 └── services/
-│   └── auth_service.py    # Authentication business logic
-│.env                      # Non-secret environment variables
-│main.py                   # FastAPI application configuration
-│requirements.txt          # Python dependencies
-└run.py                    # Backend server runner with some validations
+│   ├── auth_service.py          # Authentication business logic
+│   └── generation_service.py    # Image generation with Replicate
+│.env                            # Non-secret environment variables
+│.env.local                      # Per-env secret environment variables
+│main.py                         # FastAPI application configuration
+│requirements.txt                # Python dependencies
+└run.py                          # Backend server runner with some validations
 ```
 
 
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/login` - Login with email/password to get JWT token (uses pre-canned users)
+
+### AI Image Generation
+- `POST /api/generate/` - Create new image generation job
+  - **Request**: `{ "prompt": "A beautiful sunset", "num_images": 5 }`
+  - **Response**: `{ "job_id": "job_abc123" }`
+- `GET /api/generate/{job_id}/stream` - Stream real-time progress via Server-Sent Events
+  - **Events**: `progress`, `done`, `error`, `keepalive`
+
+### Performance Metrics
+Each generation job tracks:
+- **TTFI (Time to First Image)**: How long until the first image completes
+- **Total Batch Time**: Total time for all images to complete
+- **Individual Image Status**: Track each image's progress independently
+
 ## Testing the API
 
-Visit the interactive API playground at at [http://localhost:8000/docs](http://localhost:8000/docs).
+Visit the interactive API playground at [http://localhost:8000/docs](http://localhost:8000/docs).
 
 ## Adding new endpoints
 
